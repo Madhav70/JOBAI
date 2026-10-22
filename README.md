@@ -1,31 +1,38 @@
 # JOBAI: AI-Powered Job Discovery, Tailored Cover Letter Generator & Autonomous Agent
 
-[![CI Quality & Acceptance Tests](https://github.com/Madhav70/JOBAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Madhav70/JOBAI/actions/workflows/ci.yml)
-[![Autonomous Job Application Agent](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml/badge.svg)](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml)
+**GitHub Repository:** [https://github.com/Madhav70/JOBAI](https://github.com/Madhav70/JOBAI)
 
 A production-grade, end-to-end intelligent career automation platform designed to discover jobs, evaluate fit, assess cover letter requirements, generate truth-grounded cover letters, protect against adversarial prompt injections, run 7-point quality audits, and autonomously apply to matched roles directly in cloud environments or via web UI.
 
 ---
 
-## 🌐 Running on GitHub (No Localhost Required)
+## 🌐 Running on GitHub & Cloud (No Localhost Required)
 
-This repository is configured to run fully in the cloud via **GitHub Actions**:
+This repository is built for cloud deployment and headless automated execution:
 
-### 1. Trigger the Autonomous Agent on GitHub
-1. Navigate to the [Actions tab on GitHub](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml).
-2. Select **"Autonomous Job Application Agent"**.
-3. Click **"Run workflow"** (specify fit threshold percentage, default: `70%`).
-4. The agent will run in a GitHub Actions runner, scan opportunities, evaluate fit, generate verified application packages, and execute submissions.
+### 1. Headless Autonomous Agent (Cloud Execution)
+Run the autonomous agent directly without launching a local browser or GUI:
+```bash
+python run_agent.py --threshold 70 --auto-apply
+```
+The agent scans all discovered jobs, computes fit scores, selects specialized CV variants, crafts bespoke cover letters, answers screening questions, and submits applications with confirmed receipts.
 
-### 2. Scheduled Autonomous Agent (Cron)
-The agent automatically runs on a schedule (Monday through Friday at 09:00 UTC) on GitHub's cloud infrastructure.
+### 2. GitHub Actions Setup (CI/CD & Scheduled Agent)
+Workflow templates are provided in [`.ci/workflows/`](https://github.com/Madhav70/JOBAI/tree/main/.ci/workflows):
+- `ci.yml`: Automated quality and 8-case acceptance test suite runner.
+- `autonomous_agent.yml`: Scheduled (cron) and on-demand (`workflow_dispatch`) autonomous job application agent.
 
-### 3. Deploy to Streamlit Community Cloud
-To host the interactive UI in the cloud:
+To enable GitHub Actions on your repository:
+1. On GitHub, navigate to [`.ci/workflows/`](https://github.com/Madhav70/JOBAI/tree/main/.ci/workflows).
+2. Move or copy the files into `.github/workflows/` (or run `gh auth refresh -h github.com -s workflow` locally and push `.github/workflows/`).
+3. You can then trigger the agent on-demand from the **Actions** tab on GitHub!
+
+### 3. Deploy to Streamlit Community Cloud (Public Web UI)
+To host the interactive web studio permanently online for free:
 1. Go to [share.streamlit.io](https://share.streamlit.io).
-2. Select your repository: `Madhav70/JOBAI`.
+2. Connect your GitHub account and select repository: **`Madhav70/JOBAI`**.
 3. Set the Main file path to: `app.py`.
-4. Click **Deploy!** Your app will be live on a public URL (e.g., `https://jobai-madhav.streamlit.app`).
+4. Click **Deploy!** Your app will be live on a public cloud URL (e.g., `https://jobai.streamlit.app`).
 
 ---
 
