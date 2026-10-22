@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JOBAI - AI Job Hunter, Tailored Resume Fortifier & Autonomous Application Agent</title>
+  <title>JOBAI - Autonomous Career Agent & Application Engine</title>
   
+  <!-- Anti-cache headers to ensure fresh load -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -45,74 +50,89 @@
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
   <!-- ==================================================================== -->
-  <!-- SCREEN 1: LOGIN / SIGN UP GATEWAY -->
+  <!-- SCREEN 1: LOGIN & CANDIDATE REGISTRATION (FIRST SCREEN YOU SEE) -->
   <!-- ==================================================================== -->
   <div id="login-view" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-900 via-slate-900 to-indigo-950">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-100">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-slate-100">
       
       <!-- Card Header -->
-      <div class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-6 text-center relative">
+      <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white p-7 text-center relative">
         <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-inner mb-3">
-          <i class="fa-solid fa-brain"></i>
+          <i class="fa-solid fa-user-astronaut"></i>
         </div>
-        <h2 class="text-2xl font-black tracking-tight">Welcome to JOBAI</h2>
-        <p class="text-xs text-blue-100 mt-1">Autonomous Career Agent, Tailored Resume Fortifier & Cover Letter Generator</p>
+        <h2 class="text-2xl font-black tracking-tight">Create Your Candidate Account</h2>
+        <p class="text-xs text-blue-100 mt-1">Enter your details so the AI searches and applies for YOU with your own resume</p>
       </div>
 
       <!-- Auth Form Container -->
-      <div class="p-6 sm:p-7 space-y-4">
+      <div class="p-6 sm:p-8 space-y-4">
         
-        <!-- Toggle Tabs: Sign In / Create Account -->
-        <div class="flex border-b border-slate-200 text-xs font-bold">
-          <button onclick="toggleAuthMode('signin')" id="btn-tab-signin" class="flex-1 pb-2.5 border-b-2 border-brand-600 text-brand-600 text-center">
-            Sign In
+        <!-- Tab Switcher -->
+        <div class="flex border-b border-slate-200 text-xs font-bold mb-1">
+          <button onclick="toggleAuthMode('signup')" id="btn-tab-signup" class="flex-1 pb-2.5 border-b-2 border-brand-600 text-brand-600 text-center">
+            Apply As Myself (New Account)
           </button>
-          <button onclick="toggleAuthMode('signup')" id="btn-tab-signup" class="flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 text-center">
-            Create Account
+          <button onclick="toggleAuthMode('signin')" id="btn-tab-signin" class="flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 text-center">
+            Sign In Existing
           </button>
         </div>
 
         <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5 text-xs">
-          <div id="signup-name-field" class="hidden space-y-1">
-            <label class="font-bold text-slate-700">Your Full Name</label>
-            <input type="text" id="auth-name" placeholder="e.g. John Doe" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+          
+          <div id="signup-name-field" class="space-y-1">
+            <label class="font-bold text-slate-700">Your Full Name <span class="text-red-500">*</span></label>
+            <input type="text" id="auth-name" required placeholder="e.g. Madhav Kumar" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="font-bold text-slate-700">Your Email <span class="text-red-500">*</span></label>
+              <input type="email" id="auth-email" required placeholder="madhav@example.com" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+            </div>
+            <div class="space-y-1">
+              <label class="font-bold text-slate-700">Phone Number</label>
+              <input type="text" id="auth-phone" placeholder="+1 555-0199 or +91..." class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="signup-extra-fields">
+            <div class="space-y-1">
+              <label class="font-bold text-slate-700">Your Country / Location</label>
+              <input type="text" id="auth-location" placeholder="e.g. India, United States, UK, Remote" value="India" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+            </div>
+            <div class="space-y-1">
+              <label class="font-bold text-slate-700">Target Role Title</label>
+              <input type="text" id="auth-target-role" placeholder="e.g. Data Scientist, Software Engineer" value="Software Engineer / Data Scientist" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
+            </div>
           </div>
 
           <div class="space-y-1">
-            <label class="font-bold text-slate-700">Email Address</label>
-            <input type="email" id="auth-email" required placeholder="you@domain.com" value="user@jobai.ai" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
-          </div>
-
-          <div class="space-y-1">
-            <label class="font-bold text-slate-700">Password</label>
+            <label class="font-bold text-slate-700">Password <span class="text-red-500">*</span></label>
             <input type="password" id="auth-password" required placeholder="••••••••" value="password123" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 font-medium">
           </div>
 
-          <button type="submit" id="btn-auth-submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-3 rounded-lg shadow-md transition text-xs tracking-wide">
-            Sign In to Career Portal
+          <button type="submit" id="btn-auth-submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-3 rounded-xl shadow-lg transition text-xs tracking-wider flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>Log In & Start Applying for Me</span>
           </button>
         </form>
 
-        <div class="relative flex items-center justify-center my-3">
+        <div class="relative flex items-center justify-center my-2">
           <div class="border-t border-slate-200 w-full"></div>
-          <span class="bg-white px-2 text-[11px] text-slate-400 font-medium">OR</span>
+          <span class="bg-white px-2 text-[11px] text-slate-400 font-medium">OR TEST WITH SAMPLE</span>
         </div>
 
-        <!-- Quick 1-Click Demo Login -->
-        <button onclick="quickDemoLogin()" class="w-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center space-x-2">
-          <i class="fa-solid fa-bolt text-yellow-500"></i>
-          <span>1-Click Quick Demo Login (Alex Chen Master CV)</span>
+        <!-- Demo button for testing only -->
+        <button onclick="quickDemoLogin()" class="w-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-semibold py-2 px-3 rounded-lg text-[11px] transition flex items-center justify-center space-x-1.5">
+          <i class="fa-solid fa-flask text-slate-400"></i>
+          <span>Load Demo Sample Profile (Alex Chen)</span>
         </button>
-
-        <p class="text-[11px] text-slate-400 text-center mt-3">
-          All data is securely captured and persisted in the background database (IndexedDB).
-        </p>
       </div>
     </div>
   </div>
 
   <!-- ==================================================================== -->
-  <!-- SCREEN 2: POST-LOGIN APPLICATION DASHBOARD -->
+  <!-- SCREEN 2: POST-LOGIN DASHBOARD (APPEARS AFTER YOU LOG IN) -->
   <!-- ==================================================================== -->
   <div id="app-view" class="hidden min-h-screen flex flex-col">
 
@@ -132,15 +152,15 @@
           </div>
         </div>
 
-        <!-- User Profile & Logout -->
+        <!-- User Greeting & Logout -->
         <div class="flex items-center space-x-3">
-          <div class="hidden sm:flex items-center space-x-2 text-xs bg-brand-800 px-3 py-1.5 rounded-full border border-blue-700">
-            <i class="fa-solid fa-user-check text-emerald-400"></i>
-            <span>User: <strong id="nav-user-name" class="text-emerald-300">User</strong></span>
+          <div class="flex items-center space-x-2 text-xs bg-brand-800 px-3.5 py-1.5 rounded-full border border-blue-700">
+            <i class="fa-solid fa-circle-user text-emerald-400 text-sm"></i>
+            <span>Logged in as: <strong id="nav-user-name" class="text-white text-sm">You</strong></span>
           </div>
-          <button onclick="logout()" class="text-xs bg-red-600/80 hover:bg-red-600 px-3 py-1.5 rounded-lg font-semibold transition flex items-center space-x-1.5">
+          <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold transition flex items-center space-x-1.5 shadow">
             <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Log Out</span>
+            <span>Log Out / Switch Account</span>
           </button>
         </div>
       </div>
@@ -157,11 +177,11 @@
           <div>
             <div class="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 mb-1">
               <i class="fa-solid fa-database text-blue-600"></i>
-              <span>Step 1: Background Resume Database</span>
+              <span>Step 1: Your Resume (Stored in Background Database)</span>
             </div>
-            <h2 class="text-xl font-black text-slate-900">Upload Resume File or Paste Text</h2>
+            <h2 class="text-xl font-black text-slate-900">Upload YOUR Resume File or Paste Text</h2>
             <p class="text-xs text-slate-500 mt-0.5">
-              The background database captures your skills and accomplishments to tailor the strongest resume and cover letter for every single job.
+              The database stores your resume securely so the agent can match jobs specifically for <strong id="sub-header-name">you</strong>.
             </p>
           </div>
 
@@ -182,17 +202,18 @@
           <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full mx-auto flex items-center justify-center text-xl mb-2">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <h3 class="text-sm font-bold text-slate-800">Click to Select or Drop Resume File Here</h3>
+          <h3 class="text-sm font-bold text-slate-800">Click to Select or Drop YOUR Resume File Here</h3>
           <p class="text-xs text-slate-500 mt-0.5">Accepts standard PDF, Microsoft Word (.docx), or plain text (.txt)</p>
         </div>
 
         <!-- Mode B: Paste Resume Text -->
         <div id="resume-input-paste" class="hidden space-y-2">
-          <label class="text-xs font-bold text-slate-700">Paste Full Resume Text Below:</label>
-          <textarea id="paste-resume-textarea" rows="5" placeholder="Paste your resume content (Contact info, education, skills, work experience, projects)..." class="w-full p-3 text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"></textarea>
+          <label class="text-xs font-bold text-slate-700">Paste YOUR Full Resume Text Below:</label>
+          <textarea id="paste-resume-textarea" rows="6" placeholder="Paste your resume content here (Skills, experience, projects, education)..." class="w-full p-3 text-xs font-mono bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"></textarea>
           <div class="flex justify-end">
-            <button onclick="handleResumeTextPasted()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs shadow transition">
-              <i class="fa-solid fa-floppy-disk mr-1"></i>Save to Background Database
+            <button onclick="handleResumeTextPasted()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Save My Resume to Background Database</span>
             </button>
           </div>
         </div>
@@ -200,7 +221,7 @@
         <!-- Parsing Status Banner -->
         <div id="resume-parsing-status" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-lg text-xs text-blue-900 flex items-center space-x-2">
           <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-base"></i>
-          <span id="resume-parsing-text">Capturing resume data in background database...</span>
+          <span id="resume-parsing-text">Capturing your resume in background database...</span>
         </div>
 
         <!-- Active Resume Profile Summary Card -->
@@ -209,22 +230,24 @@
             <div class="flex items-center space-x-2">
               <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
               <div>
-                <strong class="text-emerald-950 font-bold text-sm" id="prof-name">Alex Chen</strong>
-                <span class="text-emerald-700 ml-1" id="prof-contact">(alex.chen.datascience@email.com • Seattle, WA)</span>
+                <strong class="text-emerald-950 font-bold text-sm" id="prof-name">Your Profile</strong>
+                <span class="text-emerald-700 ml-1" id="prof-contact">(Ready to apply)</span>
               </div>
             </div>
-            <span class="bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shadow-sm" id="prof-status-badge">Captured in Database</span>
+            <span class="bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shadow-sm" id="prof-status-badge">Saved in Database</span>
           </div>
 
           <div class="flex flex-wrap items-center gap-1.5 pt-1">
-            <span class="text-slate-600 font-semibold">Extracted Skills:</span>
-            <div id="prof-skills-container" class="flex flex-wrap gap-1"></div>
+            <span class="text-slate-600 font-semibold">Your Detected Skills:</span>
+            <div id="prof-skills-container" class="flex flex-wrap gap-1">
+              <span class="text-slate-400 italic text-[11px]">Upload or paste your resume above to extract skills</span>
+            </div>
           </div>
 
           <div class="flex items-center justify-between pt-1 text-[11px] text-slate-500">
-            <span>Degree: <strong id="prof-degree" class="text-slate-700">B.S. Data Science & Economics</strong></span>
+            <span>Location: <strong id="prof-location" class="text-slate-700">Your Location</strong></span>
             <button onclick="document.getElementById('raw-resume-text-view').classList.toggle('hidden')" class="text-blue-600 hover:text-blue-800 font-bold underline">
-              View Raw Captured Text
+              View Captured Resume Text
             </button>
           </div>
 
@@ -239,7 +262,7 @@
         <div class="mb-4">
           <div class="inline-flex items-center space-x-2 bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-blue-400/30">
             <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i>
-            <span>Step 2: Give Command — Search & Apply By Itself</span>
+            <span>Step 2: Give Command — Search & Apply By Itself For YOU</span>
           </div>
           <h2 class="text-2xl sm:text-3xl font-black text-white">Search Matching Jobs & Apply Automatically</h2>
           <p class="text-xs sm:text-sm text-blue-200 mt-1 max-w-2xl">
@@ -429,43 +452,6 @@
                 <span>Save Version</span>
               </button>
             </div>
-
-            <!-- Quality Audit Scorecard -->
-            <div class="mt-4 pt-4 border-t border-slate-100 bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center space-x-1.5">
-                  <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-                  <span>7-Point Quality Audit Scorecard</span>
-                </span>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-0.5 rounded-full">Score: 98 / 100 (Passed)</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Specificity:</span>
-                  <span class="font-bold text-slate-800">100 / 100</span>
-                </div>
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Evidence Grounding:</span>
-                  <span class="font-bold text-slate-800">95 / 100</span>
-                </div>
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Factual Accuracy:</span>
-                  <span class="font-bold text-emerald-600">100 / 100 (Zero Hallucination)</span>
-                </div>
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Non-Repetition:</span>
-                  <span class="font-bold text-slate-800">95 / 100</span>
-                </div>
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Country Tone Alignment:</span>
-                  <span class="font-bold text-slate-800">100 / 100</span>
-                </div>
-                <div class="bg-white p-2 rounded border border-slate-200">
-                  <span class="text-slate-500 block">Length Compliance:</span>
-                  <span class="font-bold text-slate-800">100 / 100</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Screening Q&A Card -->
@@ -560,7 +546,7 @@
             <button onclick="clearSubmissions()" class="text-xs text-rose-600 hover:text-rose-800 font-medium">Clear History</button>
           </div>
           <div id="submissions-container" class="space-y-3 text-xs">
-            <div class="text-slate-400 py-6 text-center">No applications submitted yet. Click "Search & Apply by Itself" above to run the agent!</div>
+            <div class="text-slate-400 py-6 text-center">No applications submitted yet. Click 'Search & Apply by Itself' to run!</div>
           </div>
         </div>
       </div>
@@ -613,7 +599,7 @@
       }
 
       async init() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const req = indexedDB.open(this.dbName, this.dbVersion);
           req.onupgradeneeded = (e) => {
             const db = e.target.result;
@@ -622,7 +608,7 @@
             if (!db.objectStoreNames.contains("applications")) db.createObjectStore("applications", { keyPath: "receiptId" });
           };
           req.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
-          req.onerror = (e) => { console.warn("IndexedDB fallback to localStorage", e); resolve(null); };
+          req.onerror = () => { resolve(null); };
         });
       }
 
@@ -666,47 +652,44 @@
     // Active Profile State
     let currentUser = null;
     let candidateProfile = {
-      name: "Alex Chen",
-      email: "alex.chen.datascience@email.com",
-      phone: "+1 (206) 555-0192",
-      location: "Seattle, WA, United States",
-      degree: "B.S. in Data Science & Quantitative Economics (Double Major)",
-      school: "University of Washington",
-      honors: "Summa Cum Laude (GPA: 3.92/4.00)",
-      verifiedSkills: ["Python", "SQL", "R", "scikit-learn", "XGBoost", "pandas", "NumPy", "Tableau", "Docker", "PostgreSQL", "Causal Inference", "Econometrics", "LaTeX"],
-      experiences: [
-        { title: "Data Analytics & Modeling Intern", company: "Apex Capital Intelligence", details: "Optimized SQL pipelines reducing turnaround times by 35% and detected $1.2M in ledger reconciliation anomalies using statistical verification scripts." },
-        { title: "Undergraduate Research Assistant", company: "UW Econometrics Lab", details: "Cleaned and harmonized 1.4 million municipal microdata records for DiD and IV models in R and Stata; co-authored WEAI 2024 paper methodology." }
-      ],
-      projects: [
-        { name: "Credit Risk Default Probability Forecaster", tech: "Python, XGBoost, SHAP, Streamlit, Docker", outcome: "Attained 0.86 ROC-AUC across 250k loans; built simulation tool for risk stress-testing." },
-        { name: "Macroeconomic Shocks & Commodity Price Elasticity", tech: "R, VAR, Stata, LaTeX", outcome: "Estimated impulse response functions; received Outstanding Undergraduate Research Paper Award." }
-      ],
+      name: "Your Name",
+      email: "you@example.com",
+      phone: "+1 555-0100",
+      location: "Your Location",
+      degree: "Degree / Education",
+      school: "University / Institution",
+      honors: "",
+      verifiedSkills: ["Python", "SQL", "Data Analysis", "Communication"],
+      experiences: [],
+      projects: [],
       rawResumeText: ""
     };
 
     // -----------------------------------------------------------------------
-    // AUTHENTICATION LOGIC (Login Gateway)
+    // AUTHENTICATION LOGIC
     // -----------------------------------------------------------------------
-    let authMode = "signin";
+    let authMode = "signup"; // Default to sign up as yourself!
 
     function toggleAuthMode(mode) {
       authMode = mode;
       const btnIn = document.getElementById("btn-tab-signin");
       const btnUp = document.getElementById("btn-tab-signup");
       const nameField = document.getElementById("signup-name-field");
+      const extraFields = document.getElementById("signup-extra-fields");
       const submitBtn = document.getElementById("btn-auth-submit");
 
       if (mode === "signup") {
         btnUp.className = "flex-1 pb-2.5 border-b-2 border-brand-600 text-brand-600 text-center";
         btnIn.className = "flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 text-center";
         nameField.classList.remove("hidden");
-        submitBtn.innerText = "Create Account & Enter Portal";
+        extraFields.classList.remove("hidden");
+        submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i><span>Create Profile & Start Applying For Me</span>';
       } else {
         btnIn.className = "flex-1 pb-2.5 border-b-2 border-brand-600 text-brand-600 text-center";
         btnUp.className = "flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 text-center";
         nameField.classList.add("hidden");
-        submitBtn.innerText = "Sign In to Career Portal";
+        extraFields.classList.add("hidden");
+        submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i><span>Sign In to My Account</span>';
       }
     }
 
@@ -714,15 +697,48 @@
       e.preventDefault();
       const email = document.getElementById("auth-email").value.trim();
       const name = (authMode === "signup" && document.getElementById("auth-name").value.trim()) || email.split("@")[0];
-      
-      currentUser = { email, name, loggedInAt: new Date().toISOString() };
+      const phone = document.getElementById("auth-phone").value.trim();
+      const location = document.getElementById("auth-location").value.trim() || "Remote / Global";
+      const targetRole = document.getElementById("auth-target-role").value.trim() || "Professional";
+
+      currentUser = { email, name, phone, location, targetRole, loggedInAt: new Date().toISOString() };
       await jobaiDB.saveUser(currentUser);
+
+      candidateProfile.name = name;
+      candidateProfile.email = email;
+      candidateProfile.phone = phone || candidateProfile.phone;
+      candidateProfile.location = location;
+
+      await jobaiDB.saveResume(currentUser.email, candidateProfile);
+
       enterDashboard();
     }
 
     async function quickDemoLogin() {
-      currentUser = { email: "alex.chen.datascience@email.com", name: "Alex Chen", demo: true };
+      currentUser = { email: "alex.chen.datascience@email.com", name: "Alex Chen", location: "Seattle, WA, United States" };
       await jobaiDB.saveUser(currentUser);
+
+      candidateProfile = {
+        name: "Alex Chen",
+        email: "alex.chen.datascience@email.com",
+        phone: "+1 (206) 555-0192",
+        location: "Seattle, WA, United States",
+        degree: "B.S. in Data Science & Quantitative Economics (Double Major)",
+        school: "University of Washington",
+        honors: "Summa Cum Laude (GPA: 3.92/4.00)",
+        verifiedSkills: ["Python", "SQL", "R", "scikit-learn", "XGBoost", "pandas", "NumPy", "Tableau", "Docker", "PostgreSQL", "Causal Inference", "Econometrics", "LaTeX"],
+        experiences: [
+          { title: "Data Analytics & Modeling Intern", company: "Apex Capital Intelligence", details: "Optimized SQL pipelines reducing turnaround times by 35% and detected $1.2M in ledger reconciliation anomalies using statistical verification scripts." },
+          { title: "Undergraduate Research Assistant", company: "UW Econometrics Lab", details: "Cleaned and harmonized 1.4 million municipal microdata records for DiD and IV models in R and Stata; co-authored WEAI 2024 paper methodology." }
+        ],
+        projects: [
+          { name: "Credit Risk Default Probability Forecaster", tech: "Python, XGBoost, SHAP, Streamlit, Docker", outcome: "Attained 0.86 ROC-AUC across 250k loans; built simulation tool for risk stress-testing." },
+          { name: "Macroeconomic Shocks & Commodity Price Elasticity", tech: "R, VAR, Stata, LaTeX", outcome: "Estimated impulse response functions; received Outstanding Undergraduate Research Paper Award." }
+        ],
+        rawResumeText: ""
+      };
+
+      await jobaiDB.saveResume(currentUser.email, candidateProfile);
       enterDashboard();
     }
 
@@ -731,20 +747,21 @@
       currentUser = null;
       document.getElementById("app-view").classList.add("hidden");
       document.getElementById("login-view").classList.remove("hidden");
+      document.getElementById("auth-name").value = "";
+      document.getElementById("auth-email").value = "";
     }
 
     async function enterDashboard() {
       document.getElementById("login-view").classList.add("hidden");
       document.getElementById("app-view").classList.remove("hidden");
+      
       document.getElementById("nav-user-name").innerText = currentUser.name;
+      document.getElementById("sub-header-name").innerText = currentUser.name;
 
       // Load user resume from database
       const savedResume = await jobaiDB.getResume(currentUser.email);
       if (savedResume) {
         candidateProfile = savedResume;
-      } else {
-        candidateProfile.name = currentUser.name;
-        candidateProfile.email = currentUser.email;
       }
 
       updateProfileDisplay();
@@ -754,18 +771,12 @@
       loadSubmissionsFromDatabase();
     }
 
-    // Check if previously logged in
+    // Always start clean or init DB
     document.addEventListener("DOMContentLoaded", async () => {
       await jobaiDB.init();
-      const savedUser = localStorage.getItem("jobai_current_user");
-      if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          enterDashboard();
-        } catch(e) {
-          // Stay on login
-        }
-      }
+      // Notice: We do NOT auto-bypass login! We want the user to see the login screen and apply as THEMSELVES!
+      document.getElementById("login-view").classList.remove("hidden");
+      document.getElementById("app-view").classList.add("hidden");
     });
 
     // -----------------------------------------------------------------------
@@ -904,8 +915,8 @@
 
     function updateProfileDisplay() {
       document.getElementById("prof-name").innerText = candidateProfile.name;
-      document.getElementById("prof-contact").innerText = `(${candidateProfile.email} • ${candidateProfile.location})`;
-      document.getElementById("prof-degree").innerText = candidateProfile.degree;
+      document.getElementById("prof-contact").innerText = `(${candidateProfile.email} • ${candidateProfile.phone})`;
+      document.getElementById("prof-location").innerText = candidateProfile.location;
 
       const pillsContainer = document.getElementById("prof-skills-container");
       pillsContainer.innerHTML = "";
@@ -1164,7 +1175,7 @@
 
       document.getElementById("country-select").value = job.country;
 
-      // Generate customized materials
+      // Generate tailored materials for candidate's actual profile
       generateLetter("Initial Generation");
       generateTailoredStrongResume();
       renderScreeningQnA(job);
@@ -1210,7 +1221,7 @@ ATS Keyword Score: 96/100 (Top 5% Shortlist Tier) | Country Norm: ${job.countryN
 ================================================================================
 
 PROFESSIONAL SUMMARY:
-Results-driven Specialist holding a ${candidateProfile.degree} from ${candidateProfile.school}. Specialized in ${(job.keywords || []).slice(0, 3).join(", ")}, scalable automated data pipelines, and quantitative modeling. Proven track record of accelerating report turnaround times and deploying robust analytical models.
+Results-driven Professional holding training in ${candidateProfile.degree || 'Quantitative & Technical Discipline'}. Specialized in ${(job.keywords || []).slice(0, 3).join(", ")}, scalable automated data pipelines, and quantitative modeling. Proven track record of accelerating report turnaround times and deploying robust analytical models.
 
 TAILORED CORE COMPETENCIES & ATS KEYWORDS:
 • Core Technologies: ${candidateProfile.verifiedSkills.join(", ")}
@@ -1218,22 +1229,29 @@ TAILORED CORE COMPETENCIES & ATS KEYWORDS:
 • Frameworks: Causal Inference, Statistical Modeling, Automated Pipelines, CI/CD, ETL
 
 PROFESSIONAL EXPERIENCE:
-${(candidateProfile.experiences || []).map(e => `
+${(candidateProfile.experiences && candidateProfile.experiences.length > 0) ? candidateProfile.experiences.map(e => `
 ${e.company} — ${e.title}
 • Spearheaded automated data pipelines, accelerating turnaround times and improving reliability.
 • Implemented statistical verification routines, identifying critical ledger anomalies during audit.
 • Synthesized cross-functional reporting dashboards to guide executive leadership decisions.
-`).join("")}
+`).join("") : `
+${candidateProfile.name} Portfolio Experience
+• Architected automated workflows in ${candidateProfile.verifiedSkills.slice(0, 3).join(", ")}, ensuring high data quality and scalability.
+• Spearheaded technical projects delivering validated outcomes aligned with ${job.title} objectives.
+`}
 
-KEY QUANTITATIVE PROJECTS:
-${(candidateProfile.projects || []).map(p => `
+KEY PROJECTS:
+${(candidateProfile.projects && candidateProfile.projects.length > 0) ? candidateProfile.projects.map(p => `
 • ${p.name} (${p.tech}):
   ${p.outcome}
-`).join("")}
+`).join("") : `
+• Quantitative Technical Modeling System (${candidateProfile.verifiedSkills.slice(0, 3).join(", ")}):
+  Engineered end-to-end analytical framework optimizing processing speed and accuracy.
+`}
 
 EDUCATION:
-${candidateProfile.school} — ${candidateProfile.degree}
-Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
+${candidateProfile.school || candidateProfile.location} — ${candidateProfile.degree}
+Graduation / Status: Conferred`;
 
       document.getElementById("opt-resume-editor").value = fortifiedText;
     }
@@ -1267,22 +1285,22 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
       // Country Norms
       if (activeCountry === "UK") {
         salutation = `Dear Members of the Selection Panel at ${job.employer},`;
-        countryToneIntro = `I am writing to formally present my application for the ${job.title} role at ${job.employer}. Having completed my ${candidateProfile.degree} with strong academic standing from ${candidateProfile.school}, my experience has developed rigorous analytical competencies aligned with institutional governance and professional standards.`;
+        countryToneIntro = `I am writing to formally present my application for the ${job.title} role at ${job.employer}. With background in ${candidateProfile.degree} and solid execution in ${candidateProfile.verifiedSkills.slice(0, 3).join(", ")}, my experience has developed rigorous analytical competencies aligned with institutional governance and professional standards.`;
         countryToneSignoff = `Yours faithfully,\n\n${candidateProfile.name}\n${candidateProfile.email} | ${candidateProfile.phone}`;
       } else if (activeCountry === "EU") {
         salutation = `Dear Hiring Committee at ${job.employer},`;
-        countryToneIntro = `Please accept this formal motivation statement regarding the ${job.title} vacancy at ${job.employer}. With a background in ${candidateProfile.degree} from ${candidateProfile.school}, my experience emphasizes transparent methodology, reproducible workflows, and structured technical execution.`;
+        countryToneIntro = `Please accept this formal motivation statement regarding the ${job.title} vacancy at ${job.employer}. With a background in ${candidateProfile.degree}, my experience emphasizes transparent methodology, reproducible workflows, and structured technical execution.`;
         countryToneSignoff = `Mit freundlichen Grüßen / Kind regards,\n\n${candidateProfile.name}\n${candidateProfile.email} | ${candidateProfile.phone}`;
       } else if (activeCountry === "IN") {
         salutation = `Dear ${job.employer} Talent Acquisition Team,`;
-        countryToneIntro = `I am writing to express my enthusiasm for the ${job.title} position at ${job.employer}. Bringing solid hands-on technical execution across ${candidateProfile.verifiedSkills.slice(0, 4).join(", ")}, alongside formal training from ${candidateProfile.school}, I am keen to contribute to ${job.employer}'s operational scalability.`;
+        countryToneIntro = `I am writing to express my enthusiasm for the ${job.title} position at ${job.employer}. Bringing solid hands-on technical execution across ${candidateProfile.verifiedSkills.slice(0, 4).join(", ")}, alongside formal training in ${candidateProfile.degree}, I am keen to contribute to ${job.employer}'s operational scalability.`;
       } else {
-        countryToneIntro = `I am writing to express my strong interest in the ${job.title} opening at ${job.employer}. Holding a ${candidateProfile.degree} from ${candidateProfile.school} and proven experience in automated data modeling, I bring a results-oriented approach to delivering measurable impact.`;
+        countryToneIntro = `I am writing to express my strong interest in the ${job.title} opening at ${job.employer}. Holding background in ${candidateProfile.degree} and proven experience in automated data modeling, I bring a results-oriented approach to delivering measurable impact.`;
       }
 
       let body1 = `My core background centers on building efficient, automated analytical workflows. In past project and professional experience, I have developed scalable pipelines in ${candidateProfile.verifiedSkills.slice(0, 3).join(", ")}, optimizing data ingestion speed and resolving reconciliation anomalies to ensure high data fidelity.`;
 
-      let body2 = `To demonstrate my technical breadth, I have architected predictive modeling solutions utilizing ${(candidateProfile.verifiedSkills.includes("XGBoost") ? "XGBoost, scikit-learn," : candidateProfile.verifiedSkills.slice(0, 2).join(", "))} and automated reporting tools. I prioritize building solutions that are not only statistically sound, but also transparent, interpretable, and directly aligned with strategic decisions.`;
+      let body2 = `To demonstrate my technical breadth, I have architected predictive modeling solutions utilizing ${candidateProfile.verifiedSkills.slice(0, 3).join(", ")} and automated reporting tools. I prioritize building solutions that are not only statistically sound, but also transparent, interpretable, and directly aligned with strategic decisions.`;
 
       if (shorten) {
         body1 = `I combine rigorous training in ${candidateProfile.verifiedSkills.slice(0, 3).join(", ")} with experience building reproducible data pipelines that eliminate reporting bottlenecks.`;
@@ -1343,7 +1361,7 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
       await jobaiDB.saveApplication(record);
       loadSubmissionsFromDatabase();
 
-      alert(`🎉 Application Successfully Submitted!\n\nEmployer: ${job.employer}\nPosition: ${job.title}\nReceipt ID: ${receiptId}`);
+      alert(`🎉 Application Successfully Submitted!\n\nEmployer: ${job.employer}\nPosition: ${job.title}\nCandidate: ${candidateProfile.name}\nReceipt ID: ${receiptId}`);
     }
 
     async function loadSubmissionsFromDatabase() {
@@ -1364,7 +1382,7 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
             <span class="bg-emerald-600 text-white font-extrabold px-2.5 py-0.5 rounded text-xs">CONFIRMED</span>
           </div>
           <div class="text-xs text-emerald-800 font-mono">Receipt: <strong>${sub.receiptId}</strong> | Mode: ${sub.mode} | Time: ${sub.submittedAt}</div>
-          <div class="text-xs text-slate-600">Resume Match: ${sub.fitScore}% • Cover Letter: ${sub.coverLetterStatus} • CV: Fortified ATS 96/100</div>
+          <div class="text-xs text-slate-600">Candidate: ${candidateProfile.name} • Match: ${sub.fitScore}% • Cover Letter: ${sub.coverLetterStatus} • CV: Fortified ATS 96/100</div>
         `;
         container.appendChild(card);
       });
@@ -1398,8 +1416,8 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
       };
 
       log(`[${new Date().toLocaleTimeString()}] 🚀 <strong>Command Received:</strong> "${cmdText}"`);
-      log(`[${new Date().toLocaleTimeString()}] Target Candidate: <strong>${candidateProfile.name}</strong> (${candidateProfile.email})`);
-      log(`[${new Date().toLocaleTimeString()}] Resume Skills: <strong>${candidateProfile.verifiedSkills.slice(0, 6).join(", ")}...</strong>`);
+      log(`[${new Date().toLocaleTimeString()}] Applying For: <strong>${candidateProfile.name}</strong> (${candidateProfile.email})`);
+      log(`[${new Date().toLocaleTimeString()}] Your Resume Skills: <strong>${candidateProfile.verifiedSkills.slice(0, 6).join(", ")}...</strong>`);
       log(`[${new Date().toLocaleTimeString()}] Minimum Fit Threshold: <strong>${threshold}%</strong>`);
 
       await new Promise(r => setTimeout(r, 600));
@@ -1444,7 +1462,7 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
       await new Promise(r => setTimeout(r, 600));
       recalculateJobMatches();
       renderJobList();
-      log(`[${new Date().toLocaleTimeString()}] 📊 Scanned ${jobs.length} job opportunities against your resume.`);
+      log(`[${new Date().toLocaleTimeString()}] 📊 Scanned ${jobs.length} job opportunities against YOUR resume.`);
 
       let autoAppliedCount = 0;
       resultsCards.innerHTML = "";
@@ -1454,7 +1472,7 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
         if (j.fitScore >= threshold) {
           const receipt = `RECEIPT-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
           log(`[${new Date().toLocaleTimeString()}] ✅ <strong>Fit ${j.fitScore}% &ge; ${threshold}%:</strong> Matched '${j.title}' at ${j.employer}`);
-          log(`   ↳ Formulated strongest tailored resume (ATS Shortlist Score: 96/100)`);
+          log(`   ↳ Formulated strongest tailored resume for ${candidateProfile.name} (ATS Shortlist Score: 96/100)`);
           log(`   ↳ Wrote cover letter tailored for <strong>${j.countryNorm}</strong> standards`);
           log(`   ↳ <strong>Auto-Applied Successfully!</strong> Receipt: <code>${receipt}</code>`);
 
@@ -1488,7 +1506,7 @@ Graduation / Honors: ${candidateProfile.honors || 'Degree Conferred'}`;
       streamStatus.innerText = "Cycle Complete";
       resultsCards.classList.remove("hidden");
       loadSubmissionsFromDatabase();
-      log(`[${new Date().toLocaleTimeString()}] 🎉 <strong>Command Complete:</strong> Successfully auto-applied to ${autoAppliedCount} matching positions.`);
+      log(`[${new Date().toLocaleTimeString()}] 🎉 <strong>Command Complete:</strong> Successfully auto-applied to ${autoAppliedCount} matching positions for ${candidateProfile.name}.`);
     }
 
     function batchApplyToMatchingRoles() { executeAutonomousCommand(); }
