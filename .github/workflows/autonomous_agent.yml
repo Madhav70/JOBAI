@@ -1,0 +1,40 @@
+name: Autonomous Job Application Agent
+
+on:
+  schedule:
+    # Runs daily Monday through Friday at 09:00 UTC
+    - cron: "0 9 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      fit_threshold:
+        description: "Minimum Fit Threshold (%)"
+        required: true
+        default: "70"
+      auto_apply:
+        description: "Execute Auto-Apply"
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Autonomous Agent Scan & Apply
+        run: |
+          THRESHOLD="${{ github.event.inputs.fit_threshold || '70' }}"
+          python run_agent.py --threshold "$THRESHOLD" --auto-apply

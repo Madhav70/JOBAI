@@ -1,6 +1,31 @@
 # JOBAI: AI-Powered Job Discovery, Tailored Cover Letter Generator & Autonomous Agent
 
-A production-grade, end-to-end intelligent career automation platform designed to discover jobs, evaluate fit, assess cover letter requirements, generate truth-grounded cover letters, protect against adversarial prompt injections, run 7-point quality audits, and autonomously apply to matched roles.
+[![CI Quality & Acceptance Tests](https://github.com/Madhav70/JOBAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Madhav70/JOBAI/actions/workflows/ci.yml)
+[![Autonomous Job Application Agent](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml/badge.svg)](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml)
+
+A production-grade, end-to-end intelligent career automation platform designed to discover jobs, evaluate fit, assess cover letter requirements, generate truth-grounded cover letters, protect against adversarial prompt injections, run 7-point quality audits, and autonomously apply to matched roles directly in cloud environments or via web UI.
+
+---
+
+## 🌐 Running on GitHub (No Localhost Required)
+
+This repository is configured to run fully in the cloud via **GitHub Actions**:
+
+### 1. Trigger the Autonomous Agent on GitHub
+1. Navigate to the [Actions tab on GitHub](https://github.com/Madhav70/JOBAI/actions/workflows/autonomous_agent.yml).
+2. Select **"Autonomous Job Application Agent"**.
+3. Click **"Run workflow"** (specify fit threshold percentage, default: `70%`).
+4. The agent will run in a GitHub Actions runner, scan opportunities, evaluate fit, generate verified application packages, and execute submissions.
+
+### 2. Scheduled Autonomous Agent (Cron)
+The agent automatically runs on a schedule (Monday through Friday at 09:00 UTC) on GitHub's cloud infrastructure.
+
+### 3. Deploy to Streamlit Community Cloud
+To host the interactive UI in the cloud:
+1. Go to [share.streamlit.io](https://share.streamlit.io).
+2. Select your repository: `Madhav70/JOBAI`.
+3. Set the Main file path to: `app.py`.
+4. Click **Deploy!** Your app will be live on a public URL (e.g., `https://jobai-madhav.streamlit.app`).
 
 ---
 
