@@ -20,34 +20,41 @@ from src.models import ApplicationStatus
 
 def main():
     parser = argparse.ArgumentParser(description="Run the JOBAI Autonomous Agent in cloud / CI environment.")
+    parser.add_argument("--query", type=str, default="", help="Search query for live job roles (e.g. 'data scientist', 'machine learning')")
     parser.add_argument("--auto-apply", action="store_true", default=True, help="Automatically submit applications for matching roles")
     parser.add_argument("--threshold", type=int, default=70, help="Minimum fit score threshold percentage (default: 70)")
     args = parser.parse_args()
 
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Starting JOBAI Autonomous Cloud Agent...")
-    print(f"Configuration: Auto-Apply={args.auto_apply}, Fit Threshold={args.threshold}%")
+    print(f"Command Input: Query='{args.query or 'All Discovered Jobs'}', Auto-Apply={args.auto_apply}, Fit Threshold={args.threshold}%")
 
     candidate_store = CandidateStore()
     job_store = JobStore()
     mgr = ApplicationWorkflowManager(candidate_store, job_store)
-    mgr.auto_apply_enabled = args.auto_apply
-    mgr.min_fit_threshold = args.threshold
 
     profile = candidate_store.get_profile()
     print(f"Loaded Candidate Ground Truth: {profile.full_name} ({profile.email})")
 
-    results = mgr.run_live_autonomous_cycle()
+    if args.query:
+        print(f"Searching real-time live web jobs matching '{args.query}'...")
+        summary = mgr.search_and_apply_command(query=args.query, min_fit_threshold=args.threshold, auto_apply=args.auto_apply)
+        results = summary["applied_jobs"]
+    else:
+        mgr.auto_apply_enabled = args.auto_apply
+        mgr.min_fit_threshold = args.threshold
+        results = mgr.run_live_autonomous_cycle()
 
     print("\n" + "=" * 60)
     print("AUTONOMOUS AGENT SCAN CYCLE SUMMARY")
     print("=" * 60)
     for r in results:
-        status_symbol = "✅" if r["action"] == "Auto-Applied" else ("⏳" if r["action"] == "Queued for Review" else "⏭️")
-        print(f"{status_symbol} [{r['action'].upper()}] {r['title']} at {r['employer']} | Fit: {r['fit_score']}%")
+        status_symbol = "✅" if (r.get("action") == "Auto-Applied" or r.get("status") == "Auto-Applied") else ("⏳" if r.get("action") == "Queued for Review" else "⏭️")
+        action_name = r.get("action") or r.get("status")
+        print(f"{status_symbol} [{action_name.upper()}] {r['title']} at {r['employer']} | Fit: {r['fit_score']}%")
         if "receipt" in r and r["receipt"]:
             print(f"   ↳ Confirmed Receipt ID: {r['receipt']}")
 
-    submitted = [r for r in results if r["action"] == "Auto-Applied"]
+    submitted = [r for r in results if (r.get("action") == "Auto-Applied" or r.get("status") == "Auto-Applied")]
     print("\n" + "-" * 60)
     print(f"Cycle Complete: {len(submitted)} applications submitted autonomously.")
     print("All materials, audit records, and submission logs verified.")

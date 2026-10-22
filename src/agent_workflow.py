@@ -260,7 +260,179 @@ class ApplicationWorkflowManager:
 
         return True, receipt_id
 
+    def search_and_apply_command(
+        self,
+        query: str = "",
+        min_fit_threshold: Optional[int] = None,
+        auto_apply: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Command-driven Autonomous Agent Execution:
+        Searches live jobs matching query, evaluates fit against candidate CV,
+        and applies automatically to matching roles.
+        """
+        threshold = min_fit_threshold if min_fit_threshold is not None else self.min_fit_threshold
+        self.auto_apply_enabled = auto_apply
+        self.min_fit_threshold = threshold
+
+        cmd_timestamp = datetime.now().strftime("%H:%M:%S")
+        self.agent_activity_logs.append(
+            f"[{cmd_timestamp}] COMMAND RECEIVED: Search '{query}' and auto-apply (Threshold: {threshold}%)"
+        )
+
+        # 1. Search live jobs
+        discovered_jobs = self.job_store.search_live_jobs(query=query, count=6)
+        self.agent_activity_logs.append(
+            f"[{cmd_timestamp}] Search complete: Discovered {len(discovered_jobs)} matching job postings."
+        )
+
+        applied_list = []
+        skipped_list = []
+
+        for job in discovered_jobs:
+            fit_score, breakdown = self.evaluate_fit(job)
+            assessment = job.assessment or RequirementAnalyzer.analyze(job.description, job.application_instructions)
+
+            # Check if already submitted
+            existing_app = self.applications.get(job.id)
+            if existing_app and existing_app.status == ApplicationStatus.SUBMITTED:
+                applied_list.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "fit_score": fit_score,
+                    "status": "Previously Submitted",
+                    "receipt": existing_app.submission_receipt
+                })
+                continue
+
+            if fit_score < threshold:
+                skipped_list.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "fit_score": fit_score,
+                    "reason": f"Fit score ({fit_score}%) below threshold ({threshold}%)"
+                })
+                continue
+
+            # Meets threshold -> Assemble package & Auto-apply!
+            app_package = self.prepare_application_package(job)
+
+            if auto_apply:
+                success, receipt = self.submit_application(job.id, mode="Command-Driven Autonomous Agent")
+                applied_list.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "fit_score": fit_score,
+                    "status": "Auto-Applied",
+                    "receipt": receipt,
+                    "cover_letter_status": assessment.status.value,
+                    "cv_variant": app_package.cv_variant_used
+                })
+                self.agent_activity_logs.append(
+                    f"[{datetime.now().strftime('%H:%M:%S')}] [AUTO-APPLIED] {job.title} at {job.employer} (Fit: {fit_score}%, Receipt: {receipt})"
+                )
+            else:
+                applied_list.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "fit_score": fit_score,
+                    "status": "Prepared & Queued",
+                    "receipt": "Awaiting User Approval",
+                    "cover_letter_status": assessment.status.value,
+                    "cv_variant": app_package.cv_variant_used
+                })
+
+        summary = {
+            "query": query,
+            "jobs_scanned": len(discovered_jobs),
+            "applied_count": len(applied_list),
+            "skipped_count": len(skipped_list),
+            "applied_jobs": applied_list,
+            "skipped_jobs": skipped_list,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        self.agent_activity_logs.append(
+            f"[{datetime.now().strftime('%H:%M:%S')}] COMMAND COMPLETED: Applied to {len(applied_list)} matching positions."
+        )
+
+        return summary
+
     def run_live_autonomous_cycle(self) -> List[Dict[str, Any]]:
+        """
+        Runs one cycle of the Live AI Autonomous Agent.
+        Scans all discovered jobs, checks fit threshold, prepares application packages,
+        and auto-applies if configured, or leaves for review.
+        """
+        results = []
+        jobs = self.job_store.list_jobs()
+        cycle_time = datetime.now().strftime("%H:%M:%S")
+
+        self.agent_activity_logs.append(f"[{cycle_time}] --- Live Autonomous AI Agent Scan Commenced ({len(jobs)} jobs) ---")
+
+        for job in jobs:
+            fit_score, breakdown = self.evaluate_fit(job)
+            assessment = job.assessment or RequirementAnalyzer.analyze(job.description, job.application_instructions)
+
+            # Check if already submitted
+            existing_app = self.applications.get(job.id)
+            if existing_app and existing_app.status == ApplicationStatus.SUBMITTED:
+                results.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "action": "Already Submitted",
+                    "fit_score": fit_score,
+                    "receipt": existing_app.submission_receipt
+                })
+                continue
+
+            # Check threshold
+            if fit_score < self.min_fit_threshold:
+                # Mark as skipped
+                msg = f"Skipped: Fit score {fit_score}% is below threshold {self.min_fit_threshold}%."
+                self.agent_activity_logs.append(f"[{cycle_time}] Job '{job.title}' at {job.employer}: {msg}")
+                results.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "action": "Skipped (Below Threshold)",
+                    "fit_score": fit_score
+                })
+                continue
+
+            # Eligible! Prepare package
+            app_package = self.prepare_application_package(job)
+
+            if self.auto_apply_enabled:
+                success, receipt = self.submit_application(job.id, mode="Live Autonomous Agent")
+                msg = f"Auto-applied! Fit: {fit_score}%, Cover Letter: {assessment.status.value}, Receipt: {receipt}"
+                self.agent_activity_logs.append(f"[{cycle_time}] [AUTONOMOUS SUBMIT] {job.title} at {job.employer} -> {msg}")
+                results.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "action": "Auto-Applied",
+                    "fit_score": fit_score,
+                    "receipt": receipt
+                })
+            else:
+                msg = f"Package prepared & queued for user 1-click review (Fit: {fit_score}%)."
+                self.agent_activity_logs.append(f"[{cycle_time}] [QUEUED FOR REVIEW] {job.title} at {job.employer} -> {msg}")
+                results.append({
+                    "job_id": job.id,
+                    "title": job.title,
+                    "employer": job.employer,
+                    "action": "Queued for Review",
+                    "fit_score": fit_score
+                })
+
+        self.agent_activity_logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] --- Cycle Complete ---")
+        return results
         """
         Runs one cycle of the Live AI Autonomous Agent.
         Scans all discovered jobs, checks fit threshold, prepares application packages,

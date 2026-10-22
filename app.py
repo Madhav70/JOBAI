@@ -227,8 +227,61 @@ def get_fit_badge(score: int) -> str:
 # View 1: Job Discovery & Cover Letter Application Studio
 # =============================================================================
 if menu == "💼 Job Discovery & Studio":
-    st.markdown('<div class="main-header">Job Discovery & Application Studio</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Discover tailored positions, inspect cover letter requirements, customize letters with 7-point quality audits, and package applications.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Job Discovery & Autonomous Studio</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Whenever you give a command, the agent searches real-time jobs tailored to your resume and applies by itself.</div>', unsafe_allow_html=True)
+
+    # -------------------------------------------------------------------------
+    # Autonomous Command Bar
+    # -------------------------------------------------------------------------
+    st.markdown(
+        """
+        <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); padding: 18px; border-radius: 10px; color: white; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: white;">⚡ Autonomous Job Search & Auto-Apply Command</h3>
+            <p style="margin: 6px 0 0 0; font-size: 0.95rem; opacity: 0.9;">
+                Enter a target role or command. The agent searches live online jobs, evaluates fit against your verified CV, synthesizes tailored cover letters, and applies autonomously.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    cmd_col1, cmd_col2, cmd_col3 = st.columns([2.5, 1, 1.2])
+    with cmd_col1:
+        user_cmd = st.text_input(
+            "Command / Role Query",
+            value="Data Scientist / Python / Machine Learning",
+            placeholder="e.g. Quantitative Risk Analyst, Remote Data Scientist, Predoc Economics..."
+        )
+    with cmd_col2:
+        cmd_threshold = st.slider("Fit Threshold (%)", min_value=50, max_value=90, value=65, step=5)
+    with cmd_col3:
+        st.write("")
+        st.write("")
+        execute_cmd = st.button("🚀 Search & Apply by Itself", type="primary", use_container_width=True)
+
+    if execute_cmd:
+        with st.status("🤖 Autonomous Agent Executing Command...", expanded=True) as status:
+            st.write(f"🔍 Searching live web job postings for **'{user_cmd}'**...")
+            summary = mgr.search_and_apply_command(query=user_cmd, min_fit_threshold=cmd_threshold, auto_apply=True)
+            st.write(f"📊 Discovered **{summary['jobs_scanned']}** opportunities.")
+            st.write(f"🎯 Evaluated candidate fit against verified Master CV.")
+            st.write(f"✅ Successfully auto-applied to **{summary['applied_count']}** matching roles!")
+            status.update(label="Autonomous Cycle Complete! Applications Submitted.", state="complete", expanded=False)
+
+        if summary["applied_jobs"]:
+            st.success(f"🎉 Auto-applied to {len(summary['applied_jobs'])} positions meeting your {cmd_threshold}% threshold!")
+            for app_item in summary["applied_jobs"]:
+                st.markdown(
+                    f"""
+                    <div style="border: 1px solid #10B981; background-color: #ECFDF5; padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+                        <b>{app_item['title']}</b> at <i>{app_item['employer']}</i> — <b>{app_item['fit_score']}% Match</b><br/>
+                        <small>Receipt ID: <code>{app_item['receipt']}</code> | CV Variant: {app_item['cv_variant']} | Cover Letter: {app_item['cover_letter_status']}</small>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            st.session_state.active_job_id = summary["applied_jobs"][0]["job_id"]
+            st.rerun()
 
     # Job List & Filter bar
     jobs = mgr.job_store.list_jobs()
