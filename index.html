@@ -893,8 +893,14 @@
       ];
 
       const rawLower = rawText.toLowerCase();
+      // Escape all special regex characters so skills like C++, C#, A/B Testing, CI/CD work safely
+      function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
       const foundSkills = skillCatalog.filter(skill => {
-        const regex = new RegExp(`\\b${skill.toLowerCase()}\\b`);
+        const escaped = escapeRegex(skill.toLowerCase());
+        // Use word-boundary-like check: preceded/followed by non-alphanumeric or start/end
+        const regex = new RegExp('(?:^|[^a-zA-Z0-9])' + escaped + '(?=[^a-zA-Z0-9]|$)', 'i');
         return regex.test(rawLower);
       });
 
