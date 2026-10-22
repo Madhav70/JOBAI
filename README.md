@@ -1,8 +1,9 @@
 # JOBAI: AI-Powered Job Discovery, Tailored Cover Letter Generator & Autonomous Agent
 
-**GitHub Repository:** [https://github.com/Madhav70/JOBAI](https://github.com/Madhav70/JOBAI)
+🌐 **Live Web Application (Hosted on GitHub Server):** [**https://madhav70.github.io/JOBAI/**](https://madhav70.github.io/JOBAI/)  
+📁 **GitHub Source Repository:** [https://github.com/Madhav70/JOBAI](https://github.com/Madhav70/JOBAI)
 
-A production-grade, end-to-end intelligent career automation platform designed to discover jobs, evaluate fit, assess cover letter requirements, generate truth-grounded cover letters, protect against adversarial prompt injections, run 7-point quality audits, and autonomously apply to matched roles directly in cloud environments or via web UI.
+A production-grade, end-to-end intelligent career automation platform designed to discover jobs, evaluate fit, assess cover letter requirements, generate truth-grounded cover letters, protect against adversarial prompt injections, run 7-point quality audits, and autonomously apply to matched roles directly on GitHub's cloud servers.
 
 ---
 
